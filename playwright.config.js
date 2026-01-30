@@ -22,8 +22,14 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+  /* Global test timeout (ms) */
+  timeout: 120000,
+  /* Default expect timeout */
+  expect: { timeout: 120000 },
+
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [['html', { open: 'always' }], ['list']],
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -31,6 +37,17 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    /* Action timeout (per Playwright action like click/fill). 0 = no limit. */
+    actionTimeout: 0,
+
+    /* Navigation timeout for page.goto and related nav actions */
+    navigationTimeout: 120000,
+
+    /* Helpful artifacts when debugging failures */
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    ignoreHTTPSErrors: true,
   },
 
   /* Configure projects for major browsers */
@@ -40,15 +57,7 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+   
 
     /* Test against mobile viewports. */
     // {
